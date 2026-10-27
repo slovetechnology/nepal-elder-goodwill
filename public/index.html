@@ -95,49 +95,46 @@
 </head>
 
 <body class="nunito-sans">
-    <div class="flex flex-col md:flex-row min-h-dvh bg-white">
-        <div class="relative flex-1 px-1 md:px-2">
-            <div class="bubbles" aria-hidden="true">
-                <span style="--size:40px;--left:5%;--duration:14s;--delay:0s;--rest:10%"></span>
-                <span style="--size:22px;--left:18%;--duration:11s;--delay:3s;--rest:60%"></span>
-                <span style="--size:56px;--left:32%;--duration:18s;--delay:6s;--rest:35%"></span>
-                <span style="--size:28px;--left:50%;--duration:12s;--delay:1s;--rest:80%"></span>
-                <span style="--size:46px;--left:68%;--duration:16s;--delay:8s;--rest:15%"></span>
-                <span style="--size:18px;--left:85%;--duration:10s;--delay:4s;--rest:50%"></span>
-                <span style="--size:34px;--left:93%;--duration:15s;--delay:10s;--rest:70%"></span>
-                <span style="--size:24px;--left:42%;--duration:13s;--delay:12s;--rest:25%"></span>
-                <span style="--size:60px;--left:76%;--duration:20s;--delay:2s;--rest:88%"></span>
-                <span style="--size:20px;--left:10%;--duration:12s;--delay:7s;--rest:45%"></span>
+    <div class="relative grid lg:flex lg:flex-row lg:items-center h-dvh bg-white overflow-hidden">
+        <div class="bubbles" aria-hidden="true">
+            <span style="--size:40px;--left:5%;--duration:14s;--delay:0s;--rest:10%"></span>
+            <span style="--size:22px;--left:18%;--duration:11s;--delay:3s;--rest:60%"></span>
+            <span style="--size:56px;--left:32%;--duration:18s;--delay:6s;--rest:35%"></span>
+            <span style="--size:28px;--left:50%;--duration:12s;--delay:1s;--rest:80%"></span>
+            <span style="--size:46px;--left:68%;--duration:16s;--delay:8s;--rest:15%"></span>
+            <span style="--size:18px;--left:85%;--duration:10s;--delay:4s;--rest:50%"></span>
+            <span style="--size:34px;--left:93%;--duration:15s;--delay:10s;--rest:70%"></span>
+            <span style="--size:24px;--left:42%;--duration:13s;--delay:12s;--rest:25%"></span>
+            <span style="--size:60px;--left:76%;--duration:20s;--delay:2s;--rest:88%"></span>
+            <span style="--size:20px;--left:10%;--duration:12s;--delay:7s;--rest:45%"></span>
+        </div>
+        <div class="relative z-30 col-start-1 row-start-1 self-center w-[calc(100%-0.5rem)] max-w-2xl lg:w-auto lg:flex-1 lg:max-w-none px-4 sm:px-6 lg:px-12 xl:px-20 2xl:px-28 py-6 mt-40 mx-auto space-y-4 lg:space-y-6 max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl lg:rounded-none bg-white/95 lg:bg-transparent shadow-2xl lg:shadow-none">
+            <div>
+                <img src="/gmail.png" alt="gmail" class="size-6">
+                <div class="font-medium text-sm lg:text-base text-gray-600">Kindly send your goodwill message to</div>
+                <div class="font-bold text-xl sm:text-2xl lg:text-4xl leading-tight">Elder Ekeoma's Igbotomma 2026</div>
             </div>
-            <div
-                class="relative z-10 w-full max-w-2xl px-2 md:px-4 py-5 rounded-xl mx-auto space-y-3 -mt-130 md:mt-0 bg-white md:bg-transparent">
-                <div>
-                    <img src="/gmail.png" alt="gmail" class="size-6">
-                    <div class="font-medium text-sm">Kindly send your goodwill message to</div>
-                    <div class="font-bold text-2xl">Elder Ekeoma's Igbotomma 2026</div>
-                </div>
-                <div class="">
-                    <form>
-                        <textarea name=""
-                            class="w-full border border-gray-300 rounded-lg p-2 outline-none resize-none h-40 md:h-80 shadow-md"
-                            placeholder="Type your message here..." id=""></textarea>
-                        <div
-                            class="error-message text-red-500 bg-red-100/50 border border-red-300 my-3 p-3 rounded-md text-xs font-medium hidden">
-                        </div>
-                        <div
-                            class="good-message text-green-500 bg-green-100/50 border border-green-300 my-3 p-3 rounded-md text-xs font-medium hidden">
-                        </div>
-                        <div class="size-fit ml-auto">
-                            <button
-                                class="button bg-primary px-4 py-2 text-white rounded-md cursor-pointer active:scale-95 transition-all">Send
-                                your message</button>
-                        </div>
-                    </form>
-                </div>
+            <div class="">
+                <form>
+                    <textarea name=""
+                        class="w-full border border-gray-300 rounded-lg p-2 outline-none resize-none h-[30dvh] lg:h-[45dvh] min-h-24 max-h-80 lg:max-h-[28rem] lg:p-4 shadow-md bg-white focus:border-primary"
+                        placeholder="Type your message here..." id=""></textarea>
+                    <div
+                        class="error-message text-red-500 bg-red-100/50 border border-red-300 my-3 p-3 rounded-md text-xs font-medium hidden">
+                    </div>
+                    <div
+                        class="good-message text-green-500 bg-green-100/50 border border-green-300 my-3 p-3 rounded-md text-xs font-medium hidden">
+                    </div>
+                    <div class="mt-3 sm:w-fit sm:ml-auto">
+                        <button
+                            class="button w-full sm:w-auto bg-primary px-4 py-2 lg:px-6 lg:py-3 text-white rounded-md cursor-pointer active:scale-95 transition-all">Send
+                            your message</button>
+                    </div>
+                </form>
             </div>
         </div>
-        <img src="/elder2.jpeg" alt=""
-            class="w-full md:w-auto h-200 min-h-dvh md:h-dvh bg-top object-cover md:object-contain shrink-0">
+        <img src="/elder2.jpeg" alt="Elder Ekeoma's Igbotomma 2026"
+            class="relative z-10 col-start-1 row-start-1 lg:order-last w-full h-dvh min-h-0 lg:w-auto lg:max-w-[55%] lg:shrink-0 object-cover object-top lg:object-contain lg:object-right">
     </div>
     <script src="form.js"></script>
 </body>
