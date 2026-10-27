@@ -2,10 +2,23 @@ import express from "express";
 import fileUpload from "express-fileupload";
 import { Resend } from 'resend';
 import "dotenv/config";
+import { readFileSync } from "fs";
 
 const app = express();
 
+// behind a proxy (Render, Nginx, etc.) so req.protocol reflects https
+app.set("trust proxy", true);
+
 app.use(express.json());
+
+// serve index.html with absolute URLs filled in, link previews need them for og:image
+const sendIndex = (req, res) => {
+    const siteUrl = process.env.SITE_URL || `${req.protocol}://${req.get("host")}`;
+    const indexHtml = readFileSync("public/index.html", "utf8");
+    res.type("html").send(indexHtml.replaceAll("%SITE_URL%", siteUrl.replace(/\/$/, "")));
+};
+app.get(["/", "/index.html"], sendIndex);
+
 app.use(express.static("public"));
 app.use(fileUpload());
 
