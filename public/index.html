@@ -35,10 +35,12 @@
 
     <link rel="apple-touch-icon" href="/eldericon.jpeg">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-    <meta http-equiv="refresh" content="500">
     <style type="text/tailwindcss">
         @theme {
         --color-primary: #da373d;
+        --color-primary-deep: #a3202a;
+        --color-gold: #e8a33d;
+        --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
       }
       .nunito-sans {
         font-family: "Nunito", sans-serif;
@@ -47,7 +49,8 @@
         font-style: normal;
     }
 
-    .bubbles {
+    /* ---------- Ambient background: slow drifting colour fields ---------- */
+    .ambient {
         position: absolute;
         inset: 0;
         overflow: hidden;
@@ -55,36 +58,183 @@
         z-index: 0;
     }
 
-    .bubbles span {
+    .ambient .orb {
         position: absolute;
-        bottom: -15vh;
         width: var(--size);
-        height: var(--size);
+        aspect-ratio: 1;
+        top: var(--top);
         left: var(--left);
         border-radius: 9999px;
-        background: radial-gradient(circle at 30% 30%, rgb(255 255 255 / 0.9), rgb(218 55 61 / 0.18) 60%, rgb(218 55 61 / 0.28));
-        box-shadow: inset 0 0 10px rgb(218 55 61 / 0.15);
+        background: var(--tint);
+        filter: blur(100px);
+        opacity: 0.35;
+        animation: orb-drift var(--duration) ease-in-out infinite alternate;
+        animation-delay: var(--delay, 0s);
+        will-change: transform;
+    }
+
+    @keyframes orb-drift {
+        0%   { transform: translate3d(0, 0, 0) scale(1); }
+        100% { transform: translate3d(3vw, -3vh, 0) scale(1.06); }
+    }
+
+    /* Static paper texture for a soft, printed feel */
+    .grain {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        pointer-events: none;
+        opacity: 0.03;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+
+    /* ---------- Entrance choreography ---------- */
+    .reveal {
         opacity: 0;
-        animation: bubble-rise var(--duration) ease-in infinite;
-        animation-delay: var(--delay);
+        transform: translateY(10px);
+        animation: reveal 0.8s var(--ease-out-expo) forwards;
+        animation-delay: calc(var(--i, 0) * 70ms + 100ms);
     }
 
-    @keyframes bubble-rise {
-        0% { transform: translate(0, 0) scale(0.8); opacity: 0; }
-        10% { opacity: 0.8; }
-        50% { transform: translate(clamp(-20px, -2vw, -8px), -60vh) scale(1); }
-        90% { opacity: 0.6; }
-        100% { transform: translate(clamp(8px, 2vw, 20px), -125vh) scale(1.05); opacity: 0; }
+    @keyframes reveal {
+        to { opacity: 1; transform: none; }
     }
 
-    /* Fewer, smaller bubbles on phones */
-    @media (max-width: 767px) {
-        .bubbles span:nth-child(n+7) { display: none; }
-        .bubbles span { width: calc(var(--size) * 0.7); height: calc(var(--size) * 0.7); }
+    /* Title with a slow light sweep */
+    .title-sheen {
+        background: linear-gradient(100deg, #18181b 0%, #18181b 42%, var(--color-primary) 50%, var(--color-gold) 54%, #18181b 62%, #18181b 100%);
+        background-size: 280% 100%;
+        background-position: 100% 0;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: sheen 2.4s ease-in-out 0.8s 1 both;
     }
+
+    @keyframes sheen {
+        from { background-position: 100% 0; }
+        to { background-position: 0% 0; }
+    }
+
+    .rule {
+        height: 2px;
+        width: 3.5rem;
+        border-radius: 9999px;
+        background: linear-gradient(90deg, var(--color-primary), var(--color-gold));
+        transform-origin: left;
+        animation: rule-grow 1.2s var(--ease-out-expo) 0.7s both;
+    }
+
+    @keyframes rule-grow {
+        from { transform: scaleX(0); }
+        to { transform: scaleX(1); }
+    }
+
+    /* ---------- Hero image ---------- */
+    .hero-img {
+        animation: hero-in 1.4s var(--ease-out-expo) both;
+    }
+
+    @keyframes hero-in {
+        from { opacity: 0; transform: scale(1.03); }
+        to { opacity: 1; transform: scale(1); filter: saturate(1); }
+    }
+
+    @media (min-width: 1024px) {
+        /* Feather the image's left edge into the form panel */
+        .hero-img {
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 22%);
+            mask-image: linear-gradient(to right, transparent 0%, #000 22%);
+        }
+    }
+
+    /* ---------- Form controls ---------- */
+    .field {
+        transition: border-color 0.3s ease, box-shadow 0.4s var(--ease-out-expo), background-color 0.3s ease;
+    }
+    .field:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 4px rgb(218 55 61 / 0.1), 0 12px 30px -12px rgb(218 55 61 / 0.35);
+    }
+
+    .dropzone {
+        background-image:
+            linear-gradient(90deg, rgb(161 161 170) 50%, transparent 0),
+            linear-gradient(90deg, rgb(161 161 170) 50%, transparent 0),
+            linear-gradient(0deg, rgb(161 161 170) 50%, transparent 0),
+            linear-gradient(0deg, rgb(161 161 170) 50%, transparent 0);
+        background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+        background-size: 12px 1.5px, 12px 1.5px, 1.5px 12px, 1.5px 12px;
+        background-position: 0 0, 0 100%, 0 0, 100% 0;
+        transition: background-color 0.3s ease, transform 0.4s var(--ease-out-expo);
+    }
+    .group:hover .dropzone,
+    .group:focus-within .dropzone {
+        background-image:
+            linear-gradient(90deg, var(--color-primary) 50%, transparent 0),
+            linear-gradient(90deg, var(--color-primary) 50%, transparent 0),
+            linear-gradient(0deg, var(--color-primary) 50%, transparent 0),
+            linear-gradient(0deg, var(--color-primary) 50%, transparent 0);
+        background-color: rgb(218 55 61 / 0.04);
+    }
+
+    .pop-in { animation: pop-in 0.6s var(--ease-out-expo) both; }
+
+    @keyframes pop-in {
+        from { opacity: 0; transform: translateY(8px) scale(0.97); }
+        to { opacity: 1; transform: none; }
+    }
+
+    /* ---------- Primary button ---------- */
+    .btn-primary {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-deep) 100%);
+        box-shadow: 0 10px 30px -10px rgb(218 55 61 / 0.6), inset 0 1px 0 rgb(255 255 255 / 0.2);
+        transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s var(--ease-out-expo), filter 0.3s ease;
+    }
+    .btn-primary::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.35) 50%, transparent 70%);
+        transform: translateX(-120%);
+        transition: transform 0.9s var(--ease-out-expo);
+    }
+    .btn-primary:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 34px -12px rgb(218 55 61 / 0.7), inset 0 1px 0 rgb(255 255 255 / 0.25);
+    }
+    .btn-primary:hover:not(:disabled)::after { transform: translateX(120%); }
+    .btn-primary:active:not(:disabled) { transform: translateY(0) scale(0.97); }
+    .btn-primary:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; }
+
+    .btn-primary .btn-icon { transition: transform 0.4s var(--ease-out-expo); }
+    .btn-primary:hover:not(:disabled) .btn-icon { transform: translateX(2px); }
+
+    .btn-primary .btn-spinner {
+        display: none;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 9999px;
+        border: 2px solid rgb(255 255 255 / 0.35);
+        border-top-color: #fff;
+        animation: spin 0.7s linear infinite;
+    }
+    .btn-primary.is-loading { cursor: progress; filter: saturate(0.7) brightness(0.95); }
+    .btn-primary.is-loading .btn-spinner { display: inline-block; }
+    .btn-primary.is-loading .btn-icon { display: none; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     @media (prefers-reduced-motion: reduce) {
-        .bubbles span { animation: none; opacity: 0.5; bottom: var(--rest, 20%); }
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
     }
 
     </style>
@@ -94,48 +244,68 @@
         rel="stylesheet">
 </head>
 
-<body class="nunito-sans">
-    <div class="relative grid lg:flex lg:flex-row lg:items-center h-dvh bg-white overflow-hidden">
-        <div class="bubbles" aria-hidden="true">
-            <span style="--size:40px;--left:5%;--duration:14s;--delay:0s;--rest:10%"></span>
-            <span style="--size:22px;--left:18%;--duration:11s;--delay:3s;--rest:60%"></span>
-            <span style="--size:56px;--left:32%;--duration:18s;--delay:6s;--rest:35%"></span>
-            <span style="--size:28px;--left:50%;--duration:12s;--delay:1s;--rest:80%"></span>
-            <span style="--size:46px;--left:68%;--duration:16s;--delay:8s;--rest:15%"></span>
-            <span style="--size:18px;--left:85%;--duration:10s;--delay:4s;--rest:50%"></span>
-            <span style="--size:34px;--left:93%;--duration:15s;--delay:10s;--rest:70%"></span>
-            <span style="--size:24px;--left:42%;--duration:13s;--delay:12s;--rest:25%"></span>
-            <span style="--size:60px;--left:76%;--duration:20s;--delay:2s;--rest:88%"></span>
-            <span style="--size:20px;--left:10%;--duration:12s;--delay:7s;--rest:45%"></span>
+<body class="nunito-sans bg-white antialiased selection:bg-primary/20 selection:text-primary-deep">
+    <div class="fx-root relative min-h-dvh lg:h-dvh lg:flex lg:flex-row lg:items-center bg-white overflow-x-hidden lg:overflow-hidden">
+        <div class="ambient" aria-hidden="true">
+            <span class="orb" style="--size:46vmax;--top:-18%;--left:-14%;--tint:#f6c1c3;--duration:45s"></span>
+            <span class="orb" style="--size:34vmax;--top:55%;--left:20%;--tint:#f7dcae;--duration:55s;--delay:-8s"></span>
+            <span class="orb" style="--size:28vmax;--top:10%;--left:38%;--tint:#fbe3e4;--duration:50s;--delay:-14s"></span>
         </div>
-        <div class="relative z-30 col-start-1 row-start-1 self-center w-[calc(100%-0.5rem)] max-w-2xl lg:w-auto lg:flex-1 lg:max-w-none px-4 sm:px-6 lg:px-12 xl:px-20 2xl:px-28 py-6 mt-48 lg:mt-0 mx-auto space-y-4 lg:space-y-6 max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl lg:rounded-none bg-white/95 lg:bg-transparent shadow-2xl lg:shadow-none">
-            <div>
-                <img src="/gmail.png" alt="gmail" class="size-6">
-                <div class="font-medium text-sm lg:text-base text-gray-600">Kindly send your goodwill message to</div>
-                <div class="font-bold text-xl sm:text-2xl lg:text-4xl leading-tight">Elder Ekeoma's Igbotomma 2026</div>
+
+        <div class="relative z-30 w-[calc(100%-1.5rem)] max-w-2xl mx-auto mt-[45dvh] mb-6 px-5 sm:px-7 py-7 space-y-6 rounded-3xl bg-white/80 backdrop-blur-xl ring-1 ring-white/70 shadow-[0_30px_80px_-20px_rgb(0_0_0/0.35)] lg:w-auto lg:flex-1 lg:max-w-none lg:m-0 lg:px-14 xl:px-20 lg:py-12 lg:h-dvh lg:overflow-y-auto lg:rounded-none lg:bg-transparent lg:backdrop-blur-none lg:ring-0 lg:shadow-none lg:flex lg:flex-col lg:justify-center">
+            <div class="space-y-3 pt-10">
+                <div class="reveal inline-flex items-center gap-2 rounded-full bg-white/70 ring-1 ring-zinc-200 px-3 py-1 shadow-sm" style="--i:0">
+                    <img src="/gmail.png" alt="gmail" class="size-4">
+                    <span class="text-[11px] font-semibold tracking-[0.18em] uppercase text-zinc-500">Goodwill messages</span>
+                </div>
+                <div class="reveal font-medium text-sm lg:text-base text-zinc-500" style="--i:1">Kindly send your goodwill message to</div>
+                <h1 class="reveal font-extrabold text-2xl sm:text-3xl lg:text-5xl leading-[1.1] tracking-tight" style="--i:2">
+                    <span class="title-sheen">Elder Ekeoma's Igbotomma 2026</span>
+                </h1>
+                <div class="rule" aria-hidden="true"></div>
             </div>
-            <div class="">
+            <div class="reveal" style="--i:3">
                 <form>
-                    <textarea name=""
-                        class="w-full border border-gray-300 rounded-lg p-2 outline-none resize-none h-[30dvh] lg:h-[45dvh] min-h-24 max-h-80 lg:max-h-[28rem] lg:p-4 shadow-md bg-white focus:border-primary"
-                        placeholder="Type your message here..." id=""></textarea>
-                    <div
-                        class="error-message text-red-500 bg-red-100/50 border border-red-300 my-3 p-3 rounded-md text-xs font-medium hidden">
+                    <textarea name="" aria-label="Your goodwill message"
+                        class="field w-full border border-zinc-200 rounded-2xl p-4 outline-none resize-none lg:h-[26dvh] min-h-[20dvh] lg:p-5 shadow-sm bg-white/90 text-base leading-relaxed text-zinc-800 placeholder:text-zinc-400 font-normal"
+                        placeholder="Write your message here. Take your time..." id=""></textarea>
+                        <div class="mt-5 space-y-2">
+                            <div class="text-sm text-zinc-500">(Optional) Upload an image if you have any</div>
+                            <label class="group block cursor-pointer">
+                                <div class="dropzone h-40 rounded-2xl flex flex-col items-center justify-center gap-2 image-upload-placeholder">
+                                    <span class="grid place-items-center size-10 rounded-full bg-white ring-1 ring-zinc-200 shadow-sm text-zinc-400 transition-all duration-500 group-hover:text-primary group-hover:ring-primary/30">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="size-5" aria-hidden="true"><path d="M12 16V4m0 0-4 4m4-4 4 4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+                                    </span>
+                                    <span class="text-sm text-zinc-400 transition-colors group-hover:text-zinc-600">Click to upload an image</span>
+                                    <span class="text-[11px] text-zinc-400/80">JPG, PNG, GIF or WebP · up to 2MB</span>
+                                </div>
+                                <img src="" alt="" class="pop-in h-40 w-full object-contain bg-zinc-900 rounded-2xl ring-1 ring-zinc-200 shadow-lg image-upload hidden">
+                                <input type="file" name="image" id="image-upload" accept="image/jpeg,image/png,image/gif,image/webp" hidden>
+                            </label>
+                        </div>
+                    <div role="alert"
+                        class="error-message pop-in text-red-600 bg-red-50/80 border border-red-200 my-3 p-3 rounded-xl text-xs font-medium hidden">
                     </div>
-                    <div
-                        class="good-message text-green-500 bg-green-100/50 border border-green-300 my-3 p-3 rounded-md text-xs font-medium hidden">
+                    <div role="status"
+                        class="good-message pop-in text-emerald-700 bg-emerald-50/80 border border-emerald-200 my-3 p-3 rounded-xl text-xs font-medium hidden">
                     </div>
-                    <div class="mt-3 sm:w-fit sm:ml-auto">
-                        <button
-                            class="button w-full sm:w-auto bg-primary px-4 py-2 lg:px-6 lg:py-3 text-white rounded-md cursor-pointer active:scale-95 transition-all">Send
-                            your message</button>
+                    <div class="mt-5 sm:w-fit sm:ml-auto">
+                        <button type="submit"
+                            class="button btn-primary w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 lg:px-8 lg:py-3.5 text-white font-semibold tracking-wide rounded-full cursor-pointer">
+                            <span>Send your message</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon size-4" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+                            <span class="btn-spinner" aria-hidden="true"></span>
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
+        <!-- Softens the photo behind the card on phones -->
+        <div class="fixed inset-0 z-20 pointer-events-none bg-gradient-to-b from-transparent via-black/5 to-white/70 lg:hidden" aria-hidden="true"></div>
         <img src="/elder2.jpeg" alt="Elder Ekeoma's Igbotomma 2026"
-            class="relative z-10 col-start-1 row-start-1 lg:order-last w-full h-dvh min-h-0 lg:w-auto lg:max-w-[55%] lg:shrink-0 object-cover object-top lg:object-contain lg:object-right">
+            class="hero-img fixed inset-0 z-10 w-full h-dvh object-cover object-top lg:relative lg:inset-auto lg:order-last lg:w-auto lg:max-w-[55%] lg:shrink-0 lg:object-contain lg:object-right">
     </div>
+    <div class="grain" aria-hidden="true"></div>
     <script src="form.js"></script>
 </body>
 
