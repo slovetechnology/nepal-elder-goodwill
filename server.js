@@ -123,8 +123,7 @@ app.post("/api/submit", async (req, res) => {
 
         const { data, error } = await resend.emails.send({
             from: `Elder Ekeoma's Igbotomma 2026 <whistleblower@admin.nepalgroupng.com>`,
-            to: ['george@gowithgeo.com'],
-            // to: ['helpdesk@nepalgroupng.com', 'george@gowithgeo.com'],
+            to: ['helpdesk@nepalgroupng.com', 'george@gowithgeo.com'],
             subject: `Elder Ekeoma's Igbotomma 2026 - Goodwill message from ${name}`,
             html,
             text,
