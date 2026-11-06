@@ -49,45 +49,6 @@
         font-style: normal;
     }
 
-    /* ---------- Ambient background: slow drifting colour fields ---------- */
-    .ambient {
-        position: absolute;
-        inset: 0;
-        overflow: hidden;
-        pointer-events: none;
-        z-index: 0;
-    }
-
-    .ambient .orb {
-        position: absolute;
-        width: var(--size);
-        aspect-ratio: 1;
-        top: var(--top);
-        left: var(--left);
-        border-radius: 9999px;
-        background: var(--tint);
-        filter: blur(100px);
-        opacity: 0.35;
-        animation: orb-drift var(--duration) ease-in-out infinite alternate;
-        animation-delay: var(--delay, 0s);
-        will-change: transform;
-    }
-
-    @keyframes orb-drift {
-        0%   { transform: translate3d(0, 0, 0) scale(1); }
-        100% { transform: translate3d(3vw, -3vh, 0) scale(1.06); }
-    }
-
-    /* Static paper texture for a soft, printed feel */
-    .grain {
-        position: fixed;
-        inset: 0;
-        z-index: 50;
-        pointer-events: none;
-        opacity: 0.03;
-        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-    }
-
     /* ---------- Entrance choreography ---------- */
     .reveal {
         opacity: 0;
@@ -238,6 +199,63 @@
     }
 
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css">
+    <style>
+        /* ---------- Rich text editor: blend Quill's snow theme into the form ---------- */
+        .editor-shell {
+            border: 1px solid rgb(228 228 231);
+            border-radius: 1rem;
+            background: rgb(255 255 255 / 0.9);
+            box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+            transition: border-color 0.3s ease, box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .editor-shell:focus-within {
+            border-color: #da373d;
+            box-shadow: 0 0 0 4px rgb(218 55 61 / 0.1), 0 12px 30px -12px rgb(218 55 61 / 0.35);
+        }
+        .editor-shell .ql-toolbar.ql-snow {
+            border: 0;
+            border-bottom: 1px solid rgb(244 244 245);
+            padding: 0.5rem 0.75rem;
+            font-family: inherit;
+        }
+        .editor-shell .ql-container.ql-snow { border: 0; font-family: inherit; font-size: 1rem; }
+        .editor-shell .ql-editor {
+            min-height: 18dvh;
+            max-height: 40dvh;
+            padding: 1rem;
+            line-height: 1.65;
+            color: rgb(39 39 42);
+            font-weight: 400;
+        }
+        @media (min-width: 1024px) {
+            .editor-shell .ql-editor { min-height: 22dvh; padding: 1.25rem; }
+        }
+        .editor-shell .ql-editor.ql-blank::before {
+            left: 1rem;
+            right: 1rem;
+            font-style: normal;
+            color: rgb(161 161 170);
+        }
+        @media (min-width: 1024px) {
+            .editor-shell .ql-editor.ql-blank::before { left: 1.25rem; right: 1.25rem; }
+        }
+        .editor-shell .ql-snow .ql-stroke { stroke: rgb(113 113 122); }
+        .editor-shell .ql-snow .ql-fill { fill: rgb(113 113 122); }
+        .editor-shell .ql-snow .ql-picker { color: rgb(113 113 122); }
+        .editor-shell .ql-snow.ql-toolbar button:hover .ql-stroke,
+        .editor-shell .ql-snow.ql-toolbar button.ql-active .ql-stroke,
+        .editor-shell .ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke,
+        .editor-shell .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke { stroke: #da373d; }
+        .editor-shell .ql-snow.ql-toolbar button:hover .ql-fill,
+        .editor-shell .ql-snow.ql-toolbar button.ql-active .ql-fill { fill: #da373d; }
+        .editor-shell .ql-snow.ql-toolbar .ql-picker-label:hover,
+        .editor-shell .ql-snow.ql-toolbar .ql-picker-label.ql-active,
+        .editor-shell .ql-snow.ql-toolbar .ql-picker-item:hover,
+        .editor-shell .ql-snow.ql-toolbar .ql-picker-item.ql-selected { color: #da373d; }
+        .editor-shell .ql-snow .ql-tooltip { z-index: 5; border-radius: 0.75rem; box-shadow: 0 10px 30px -10px rgb(0 0 0 / 0.25); }
+        .editor-shell .ql-snow a { color: #a3202a; }
+    </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap"
@@ -246,13 +264,7 @@
 
 <body class="nunito-sans bg-white antialiased selection:bg-primary/20 selection:text-primary-deep">
     <div class="fx-root relative min-h-dvh lg:h-dvh lg:flex lg:flex-row lg:items-center bg-white overflow-x-hidden lg:overflow-hidden">
-        <div class="ambient" aria-hidden="true">
-            <span class="orb" style="--size:46vmax;--top:-18%;--left:-14%;--tint:#f6c1c3;--duration:45s"></span>
-            <span class="orb" style="--size:34vmax;--top:55%;--left:20%;--tint:#f7dcae;--duration:55s;--delay:-8s"></span>
-            <span class="orb" style="--size:28vmax;--top:10%;--left:38%;--tint:#fbe3e4;--duration:50s;--delay:-14s"></span>
-        </div>
-
-        <div class="relative z-30 w-[calc(100%-1.5rem)] max-w-2xl mx-auto mt-[45dvh] mb-6 px-5 sm:px-7 py-7 space-y-6 rounded-3xl bg-white/80 backdrop-blur-xl ring-1 ring-white/70 shadow-[0_30px_80px_-20px_rgb(0_0_0/0.35)] lg:w-auto lg:flex-1 lg:max-w-none lg:m-0 lg:px-14 xl:px-20 lg:py-12 lg:h-dvh lg:overflow-y-auto lg:rounded-none lg:bg-transparent lg:backdrop-blur-none lg:ring-0 lg:shadow-none lg:flex lg:flex-col lg:justify-center">
+        <div class="relative z-30 w-[calc(100%-1.5rem)] max-w-2xl mx-auto mt-[45dvh] mb-6 px-5 sm:px-7 py-7 space-y-6 rounded-3xl bg-white/80 backdrop-blur-xl ring-1 ring-white/70 shadow-[0_30px_80px_-20px_rgb(0_0_0/0.35)] lg:w-auto lg:flex-1 lg:max-w-none lg:m-0 lg:px-14 xl:px-20 lg:py-12 lg:h-dvh lg:overflow-y-auto lg:rounded-none lg:bg-transparent lg:backdrop-blur-none lg:ring-0 lg:shadow-none lg:flex lg:flex-col lg:justify-center-safe">
             <div class="space-y-3 pt-10">
                 <div class="reveal inline-flex items-center gap-2 rounded-full bg-white/70 ring-1 ring-zinc-200 px-3 py-1 shadow-sm" style="--i:0">
                     <img src="/gmail.png" alt="gmail" class="size-4">
@@ -266,11 +278,16 @@
             </div>
             <div class="reveal" style="--i:3">
                 <form>
-                    <textarea name="" aria-label="Your goodwill message"
-                        class="field w-full border border-zinc-200 rounded-2xl p-4 outline-none resize-none lg:h-[26dvh] min-h-[20dvh] lg:p-5 shadow-sm bg-white/90 text-base leading-relaxed text-zinc-800 placeholder:text-zinc-400 font-normal"
-                        placeholder="Write your message here. Take your time..." id=""></textarea>
-                        <div class="mt-5 space-y-2">
-                            <div class="text-sm text-zinc-500">(Optional) Upload an image if you have any</div>
+                    <label for="sender-name" class="sr-only">Your name</label>
+                    <input type="text" id="sender-name" name="name" autocomplete="name" maxlength="100"
+                        class="field w-full border border-zinc-200 rounded-2xl px-4 py-3 lg:px-5 mb-3 outline-none shadow-sm bg-white/90 text-base text-zinc-800 placeholder:text-zinc-400 font-normal"
+                        placeholder="Your full name">
+                    <div class="editor-shell">
+                        <div id="editor" aria-label="Your goodwill message"></div>
+                    </div>
+                    <div class="mt-5 space-y-2">
+                        <div class="text-sm text-zinc-500">(Optional) Attach an image or a document if you have any</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <label class="group block cursor-pointer">
                                 <div class="dropzone h-40 rounded-2xl flex flex-col items-center justify-center gap-2 image-upload-placeholder">
                                     <span class="grid place-items-center size-10 rounded-full bg-white ring-1 ring-zinc-200 shadow-sm text-zinc-400 transition-all duration-500 group-hover:text-primary group-hover:ring-primary/30">
@@ -282,7 +299,26 @@
                                 <img src="" alt="" class="pop-in h-40 w-full object-contain bg-zinc-900 rounded-2xl ring-1 ring-zinc-200 shadow-lg image-upload hidden">
                                 <input type="file" name="image" id="image-upload" accept="image/jpeg,image/png,image/gif,image/webp" hidden>
                             </label>
+                            <div>
+                                <label class="group block cursor-pointer document-upload-placeholder">
+                                    <div class="dropzone h-40 rounded-2xl flex flex-col items-center justify-center gap-2">
+                                        <span class="grid place-items-center size-10 rounded-full bg-white ring-1 ring-zinc-200 shadow-sm text-zinc-400 transition-all duration-500 group-hover:text-primary group-hover:ring-primary/30">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="size-5" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6m-6 4h4"/></svg>
+                                        </span>
+                                        <span class="text-sm text-zinc-400 transition-colors group-hover:text-zinc-600">Click to attach a document</span>
+                                        <span class="text-[11px] text-zinc-400/80">PDF, DOC or DOCX · up to 5MB</span>
+                                    </div>
+                                    <input type="file" name="document" id="document-upload" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
+                                </label>
+                                <div class="document-preview pop-in h-40 rounded-2xl bg-white ring-1 ring-zinc-200 shadow-lg p-4 flex flex-col items-center justify-center gap-2 text-center hidden">
+                                    <span class="document-badge grid place-items-center h-12 w-10 rounded-lg bg-primary/10 text-primary text-[10px] font-extrabold tracking-wider"></span>
+                                    <span class="document-name max-w-full truncate text-sm font-semibold text-zinc-700"></span>
+                                    <span class="document-size text-[11px] text-zinc-400"></span>
+                                    <button type="button" class="document-remove text-xs font-semibold text-primary hover:text-primary-deep underline-offset-2 hover:underline cursor-pointer">Remove</button>
+                                </div>
+                            </div>
                         </div>
+                    </div>
                     <div role="alert"
                         class="error-message pop-in text-red-600 bg-red-50/80 border border-red-200 my-3 p-3 rounded-xl text-xs font-medium hidden">
                     </div>
@@ -305,7 +341,7 @@
         <img src="/elder2.jpeg" alt="Elder Ekeoma's Igbotomma 2026"
             class="hero-img fixed inset-0 z-10 w-full h-dvh object-cover object-top lg:relative lg:inset-auto lg:order-last lg:w-auto lg:max-w-[55%] lg:shrink-0 lg:object-contain lg:object-right">
     </div>
-    <div class="grain" aria-hidden="true"></div>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     <script src="form.js"></script>
 </body>
 
